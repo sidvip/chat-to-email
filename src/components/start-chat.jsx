@@ -2,17 +2,49 @@ import { Box, Button, Heading, Link, Textarea } from "@chakra-ui/react";
 import { useState } from "react";
 import { sendEmail } from "../api/api";
 import { useToast } from "@chakra-ui/react";
-export default function StartChat({ email, backToHistory, response }) {
+export default function StartChat({
+  email,
+  selectedChat,
+  showChatHistory,
+  setSelectedChat,
+}) {
   const toast = useToast();
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  let randomId = Math.round(Math.random() * 1000000);
+  const payload = {
+    from: process.env.REACT_APP_EMAIL,
+    to: email,
+    subject: "Chat with Agent",
+    text: message,
+    replyTo: selectedChat?.To || `tstngninja+support${randomId}@gmail.com`,
+    inReplyTo:
+      selectedChat?.["In-Reply-To"] + " " + selectedChat?.To ||
+      `tstngninja+support${randomId}@gmail.com`,
+    headers: {
+      ...(selectedChat?.["Message-ID"]
+        ? { messageId: selectedChat?.["Message-ID"] }
+        : {}),
+      priority: "high",
+    },
+    ...(selectedChat?.["References"]
+      ? { references: selectedChat?.["References"] }
+      : {}),
+  };
   return (
     <Box className="p-4">
       <Box className="flex flex-col gap-4">
         <Heading size="md" className="text-gray-500 text-center">
           Starting chat with <span className="text-blue-500">{email}</span>
         </Heading>
-        <Link colorScheme="blue" className="self-end" onClick={backToHistory}>
+        <Link
+          colorScheme="blue"
+          className="self-end"
+          onClick={() => {
+            showChatHistory(true);
+            setSelectedChat({});
+          }}
+        >
           {" "}
           ← Back to Chat History
         </Link>
@@ -26,19 +58,17 @@ export default function StartChat({ email, backToHistory, response }) {
           size="lg"
           iconSpacing={2}
           leftIcon={<span>✈️</span>}
-          disabled={sending}
+          isDisabled={sending}
           onClick={() => {
             if (message.length > 3) {
               setSending(true);
-              sendEmail({
-                subject: "Chat with Agent",
-                content: message,
-                to: email,
-              })
+              sendEmail(payload)
                 .then((response) => {
                   toast({
                     title: "Email Success",
-                    description: response?.data?.message,
+                    description: response
+                      ? "Reply sent successfully"
+                      : "Email sent successfully",
                     status: "success",
                     duration: 3000,
                     isClosable: true,
@@ -47,7 +77,6 @@ export default function StartChat({ email, backToHistory, response }) {
                   setSending(false);
                 })
                 .catch((error) => {
-                  console.log(error);
                   toast({
                     title: "Email Failure",
                     description: error?.message,
@@ -70,10 +99,18 @@ export default function StartChat({ email, backToHistory, response }) {
             }
           }}
         >
-          {sending ? "Sending ..." : "Send"}
+          {selectedChat && Object.keys(selectedChat)?.length > 0
+            ? sending
+              ? "Replying..."
+              : "Reply"
+            : sending
+            ? "Sending ..."
+            : "Send"}
         </Button>
       </Box>
-      <Box className="p-2 my-10">{response}</Box>
+      <Box className="p-2 my-10">
+        <pre>{selectedChat?.response}</pre>
+      </Box>
     </Box>
   );
 }

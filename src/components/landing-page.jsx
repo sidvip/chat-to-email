@@ -6,22 +6,24 @@ import ChatHistory from "./chat-history";
 export default function LandingPage() {
   const [email, setEmail] = useState("");
   const [isChatHistory, showChatHistory] = useState(true);
-  const [response, setResponse] = useState("");
+  const [selectedChat, setSelectedChat] = useState({});
+
   return (
     <Box>
-      {isChatHistory ? (
+      {isChatHistory && Object.keys(selectedChat)?.length === 0 ? (
         <ChatHistory
           setEmail={setEmail}
           showChatHistory={showChatHistory}
           email={email}
-          setResponse={setResponse}
+          setSelectedChat={setSelectedChat}
         />
       ) : null}
-      {!isChatHistory || response ? (
+      {!isChatHistory || Object.keys(selectedChat)?.length > 0 ? (
         <StartChat
-          email={email}
-          backToHistory={() => showChatHistory(true)}
-          response={response}
+          email={email || selectedChat?.From}
+          showChatHistory={showChatHistory}
+          setSelectedChat={setSelectedChat}
+          selectedChat={selectedChat}
         />
       ) : null}
     </Box>

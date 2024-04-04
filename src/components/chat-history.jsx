@@ -22,7 +22,7 @@ export default function ChatHistory({
   email,
   showChatHistory,
   setEmail,
-  setResponse,
+  setSelectedChat,
 }) {
   const [data, setData] = useState(null);
 
@@ -36,9 +36,9 @@ export default function ChatHistory({
         );
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
       });
-  });
+  }, []);
 
   function groupChats(data) {
     return data?.reduce((a, b, c, d) => {
@@ -90,12 +90,20 @@ export default function ChatHistory({
         {/* <Heading size="md">There is no chat history</Heading> */}
         {data === null ? (
           <ChatSkeleton />
+        ) : data?.length === 0 ? (
+          <Heading as="h4" className="text-center my-10" color="red">
+            No chat records found for support <br />
+            😟
+          </Heading>
         ) : (
           <Box className="flex flex-col gap-4">
             {Object.keys(groupChats(data))?.map((chatKey) => (
               <Card
                 className="p-2 cursor-pointer"
-                onClick={() => setResponse(groupChats(data)[chatKey].response)}
+                onClick={() => {
+                  setSelectedChat(groupChats(data)?.[chatKey]);
+                  showChatHistory(false);
+                }}
               >
                 <CardBody>
                   <Heading size="md" color="#48AAE4" as="body">

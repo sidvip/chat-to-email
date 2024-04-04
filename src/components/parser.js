@@ -17,7 +17,11 @@ export function parser(string) {
     string.split("\r").forEach((ele) => {
         if (KEYS.filter(k => new RegExp(k).test(ele)).length > 0) {
             let split = ele.split(/:(.*)/s);
-            map[split[0].trim()] = split[1]?.replace(/(>|<)/g, "").trim();
+            if (ele.includes("From")) {
+                map[split[0].trim()] = split[1]?.replace(/(>)/g, "").trim()?.split("<")[1];
+            } else {
+                map[split[0].trim()] = split[1]?.replace(/(>|<)/g, "").trim();
+            }
         }
         if (ele.includes(id)) {
             counter += 1;
