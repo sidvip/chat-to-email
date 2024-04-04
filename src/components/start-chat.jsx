@@ -15,9 +15,14 @@ export default function StartChat({
   const payload = {
     from: process.env.REACT_APP_EMAIL,
     to: email,
-    subject: "Chat with Agent",
+    subject:
+      Object.keys(selectedChat).length === 0
+        ? "Chat with Support" + randomId
+        : selectedChat?.Subject,
     text: message,
-    replyTo: selectedChat?.To || `tstngninja+support${randomId}@gmail.com`,
+    replyTo: selectedChat?.To
+      ? `${selectedChat?.To} tstngninja@gmail.com`
+      : `tstngninja+support${randomId}@gmail.com`,
     inReplyTo:
       selectedChat?.["In-Reply-To"] + " " + selectedChat?.To ||
       `tstngninja+support${randomId}@gmail.com`,
