@@ -1,9 +1,7 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import StartChat from "./start-chat";
 import ChatHistory from "./chat-history";
-import { getAllEmails } from "../api/api";
-import { parser } from "./parser";
 
 export default function LandingPage() {
   const [email, setEmail] = useState("");

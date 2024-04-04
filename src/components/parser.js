@@ -29,9 +29,9 @@ export function parser(string) {
             response += ele;
             if (counter === 2) {
                 map["response"] = response.replaceAll(/(>|<)/ig, "")
-                    .replaceAll('charset=\"UTF-8\"', "")
-                    .replaceAll('\nContent-Type: text\/plain;', "")
-                    .replaceAll('\nContent-Type: text\/html;', "");
+                    .replaceAll('charset="UTF-8"', "")
+                    .replaceAll('\nContent-Type: text/plain;', "")
+                    .replaceAll('\nContent-Type: text/html;', "");
                 counter = 0;
             }
         }
